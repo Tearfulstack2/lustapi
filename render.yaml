@@ -1,0 +1,20 @@
+# Render blueprint for the lustpress API.
+# Push the api/ folder as its own GitHub repo, then Render → New → Blueprint
+# → select the repo. Render reads this file and creates the service.
+# (Full click-by-click guide: see RENDER.md next to this file.)
+services:
+  - type: web
+    name: lustpress-api
+    runtime: docker
+    plan: free # spin-down after 15 min idle; use "starter" for always-on
+    healthCheckPath: / # GET / returns 200 JSON when the scrapers are up
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: EXPIRE_CACHE
+        value: 1 # response cache TTL, hours
+      - key: LUSTPRESS_GRAPHQL
+        value: false # site doesn't use /graphql; leave off
+      # PORT is injected by Render automatically — do not set it here.
+      # Optional: REDIS_URL (Render → New → Redis) for cache that survives
+      # restarts; without it the API uses in-memory cache (fine).
+      # Optional: USER_AGENT to identify your instance to upstreams.
